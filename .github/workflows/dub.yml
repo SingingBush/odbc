@@ -10,13 +10,13 @@ on:
 jobs:
   # Make sure the latest versions of dub and ldc work on all platforms
   build-latest:
-    name: ${{ matrix.compiler }} on ${{ matrix.os }}
+    name: ${{ matrix.dc }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        compiler:
+        os: [ ubuntu-latest, windows-latest ]
+        dc:
           - dmd-latest
           - ldc-latest
           - dmd-2.096.1
@@ -44,13 +44,16 @@ jobs:
 #          - ldc-1.17.0 # eq to dmd v2.087
 #          - ldc-1.16.0 # eq to dmd v2.086.1
           - ldc-1.15.0 # eq to dmd v2.085.1
+        include:
+          - { os: macos-latest, dc: dmd-latest }
+          - { os: macos-latest, dc: ldc-latest }
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install D ${{ matrix.compiler }}
+      - name: Install D ${{ matrix.dc }}
         uses: dlang-community/setup-dlang@v1
         with:
-          compiler: ${{ matrix.compiler }}
+          compiler: ${{ matrix.dc }}
 
       - name: Dub Build
         env:
