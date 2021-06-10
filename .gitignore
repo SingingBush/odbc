@@ -1,0 +1,16 @@
+# Ignore local dub files
+.dub
+dub.selections.json
+
+# Ignore build output
+/odbc
+odbc.so
+odbc.dylib
+odbc.dll
+odbc.a
+odbc.lib
+odbc-test-*
+*.exe
+*.o
+*.obj
+*.lst

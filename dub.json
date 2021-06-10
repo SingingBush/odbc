@@ -1,0 +1,16 @@
+{
+	"name": "odbc",
+	"targetType": "library",
+	"description": "Wrapper for ODBC headers",
+	"authors": [
+		"Samael Bate (singingbush)", "David L. Davis (original author)"
+	],
+	"homepage": "https://github.com/singingbush/odbc",
+    "license": "BSL-1.0",
+	"buildRequirements": [
+		"allowWarnings"
+	],
+    "systemDependencies": "ODBC needs to be available (odbc32.dll on Windows)",
+	"libs-posix": ["odbc"],
+	"libs-windows": ["odbc32"]
+}
