@@ -1,0 +1,16 @@
+{
+	"name": "odbctest",
+    "description": "Test project for ODBC",
+	"authors": [
+		"Samael Bate (singingbush)"
+	],
+	"homepage": "https://github.com/singingbush/odbc",
+    "license": "BSL-1.0",
+    "dependencies": {
+        "odbc": {"version": "~master", "path": "../"}
+    },
+    "targetType": "executable",
+    "buildRequirements": [
+		"allowWarnings"
+	]
+}

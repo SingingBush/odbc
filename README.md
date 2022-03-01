@@ -16,3 +16,11 @@ Those modules are now deprecated (see [Mark etc.c.odbc as deprecated](https://gi
  - odbc/sqlext.d
  - odbc/sqltypes.d
  - odbc/sqlucode.d
+
+## Installing a driver
+
+On Windows you can use chocolatey to install the SQL Server ODBC driver:
+
+```
+choco install sqlserver-odbcdriver
+```

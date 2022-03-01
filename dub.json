@@ -12,5 +12,17 @@
 	],
     "systemDependencies": "ODBC needs to be available (odbc32.dll on Windows)",
 	"libs-posix": ["odbc"],
-	"libs-windows": ["odbc32"]
+	"libs-windows": ["odbc32"],
+	"configurations": [
+		{
+			"name": "default"
+		},
+		{
+			"name": "integration-test",
+			"sourcePaths" : ["test/source"],
+            "mainSourceFile": "test/source/main.d",
+			"targetPath": "test",
+			"targetType": "executable"
+		}
+	]
 }
