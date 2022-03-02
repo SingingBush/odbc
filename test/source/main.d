@@ -20,10 +20,11 @@ import std.string : fromStringz, toStringz;
 // import std.variant;
 
 version(Windows) {
-    string connectionString = "Driver={SQL Server};Server=127.0.0.1;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Windows
+    string connectionString = "Driver={SQL Server};Server=127.0.0.1;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Windows
 } else {
-    string connectionString = "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,1433;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix
-    //string connectionString = "Driver=FreeTDS;Server=127.0.0.1,1433;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix with FreeTDS
+    string connectionString = "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,1433;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix
+    //string connectionString = "Driver=msodbc17;Server=127.0.0.1,1433;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix
+    //string connectionString = "Driver=FreeTDS;Server=127.0.0.1,1433;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix with FreeTDS
 }
 
 
@@ -56,7 +57,7 @@ int main(string[] argv) {
         direction = SQL_FETCH_NEXT;
 
         //printf("%s - %s\n", cast(char*) driver, cast(char*) attr); // todo: use D style syntax
-        writefln("%s - %s", driver.fromStringz, attr.fromStringz);
+        writefln("%s - %s", fromStringz(cast(char*) driver), fromStringz(cast(char*) attr));
 
         if (ret == SQL_SUCCESS_WITH_INFO) {
             writeln("\tdata truncation\n");
@@ -86,8 +87,8 @@ int main(string[] argv) {
         // SQLGetInfo(conn, SQL_GETDATA_EXTENSIONS, cast(SQLPOINTER)&getdata_support, 0, 0);
         // SQLGetInfo(conn, SQL_MAX_CONCURRENT_ACTIVITIES, &max_concur_act, 0, 0);
 
-        writefln("DBMS Name:\t%s", dbms_name.fromStringz);
-        writefln("DBMS Version:\t%s", dbms_ver.fromStringz);
+        writefln("DBMS Name:\t%s", fromStringz(cast(char*) dbms_name));
+        writefln("DBMS Version:\t%s", fromStringz(cast(char*) dbms_ver));
 
         // if (max_concur_act == 0) {
         //     printf("SQL_MAX_CONCURRENT_ACTIVITIES - no limit or undefined\n");

@@ -19,7 +19,7 @@ Those modules are now deprecated (see [Mark etc.c.odbc as deprecated](https://gi
 
 ## Installing a driver
 
-You'll need to have an ODBC driver installed. For example to use SQL Server you can use _msodbcsql17_ or _FreeTDS_.
+You'll need to have an ODBC driver installed. For example to use SQL Server you can use _msodbcsql17_, _msodbcsql18_ or _FreeTDS_.
 
 ### Windows
 
@@ -29,10 +29,16 @@ On Windows you can use chocolatey to install the SQL Server ODBC driver:
 choco install sqlserver-odbcdriver
 ```
 
-### Linux (Ubuntu)
+### Linux
 
-To install Microsofts _ODBC Driver 17 for SQL Server_ you can install the _msodbcsql17_ package:
+To install Microsoft's ODBC Driver (either 17 or 18), you can install the _msodbcsql17_ or _msodbcsql18_ package. 
+
+#### Ubuntu
 
 ```
+sudo curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+
+sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
 sudo ACCEPT_EULA=Y apt-get install msodbcsql17 -y
 ```

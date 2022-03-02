@@ -14,3 +14,4 @@ odbc-test-*
 *.o
 *.obj
 *.lst
+test/odbctest

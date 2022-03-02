@@ -21,16 +21,16 @@ jobs:
           - dmd-2.098.1
           - dmd-2.097.2
           - dmd-2.096.1
-          - dmd-2.095.1
-          - dmd-2.094.2
-          - dmd-2.093.1
-          - dmd-2.092.1
-          - dmd-2.091.1
-          - dmd-2.090.1
-          - dmd-2.089.1
-          - dmd-2.088.1
-          - dmd-2.087.1
-          - dmd-2.086.1
+          # - dmd-2.095.1
+          # - dmd-2.094.2
+          # - dmd-2.093.1
+          # - dmd-2.092.1
+          # - dmd-2.091.1
+          # - dmd-2.090.1
+          # - dmd-2.089.1
+          # - dmd-2.088.1
+          # - dmd-2.087.1
+          # - dmd-2.086.1
           - dmd-2.085.1
           - dmd-2.077.1
           - dmd-2.076.1 # gdc (gcc v9 - v11.1) supports D at this version
@@ -102,6 +102,7 @@ jobs:
     services:
       mssql:
         #image: microsoft/mssql-server-linux:2017-latest
+        #image: mcr.microsoft.com/mssql/server:2017-latest
         image: mcr.microsoft.com/mssql/server:2019-latest
         ports: [1433]
         env:
@@ -131,5 +132,5 @@ jobs:
         working-directory: ./test
         env:
           PORT: ${{ job.services.mssql.ports[1433] }}
-        run: ./odbctest "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,$PORT;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"
+        run: ./odbctest "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,$PORT;Uid=sa;Pwd=bbk4k77JKH88g54;"
 
