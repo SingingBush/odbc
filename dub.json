@@ -21,6 +21,7 @@
 			"name": "integration-test",
 			"sourcePaths" : ["test/source"],
             "mainSourceFile": "test/source/main.d",
+			"targetName": "odbctest",
 			"targetPath": "test",
 			"targetType": "executable"
 		}

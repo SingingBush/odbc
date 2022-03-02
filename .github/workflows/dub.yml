@@ -5,11 +5,10 @@ on:
     - cron: '15 3 1 * *'
   push:
   pull_request:
-    branches: [ master ]
 
 jobs:
   # Make sure the latest versions of dub and ldc work on all platforms
-  build-latest:
+  build:
     name: ${{ matrix.dc }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -19,6 +18,8 @@ jobs:
         dc:
           - dmd-latest
           - ldc-latest
+          - dmd-2.098.1
+          - dmd-2.097.2
           - dmd-2.096.1
           - dmd-2.095.1
           - dmd-2.094.2
@@ -92,3 +93,43 @@ jobs:
         env:
           DC: gdc
         run: dub test --compiler=gdc
+
+  integration-test:
+    name: Integration Test
+    #needs: build
+    #if: ${{ needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    services:
+      mssql:
+        #image: microsoft/mssql-server-linux:2017-latest
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports: [1433]
+        env:
+          MSSQL_PID: Developer
+          SA_PASSWORD: bbk4k77JKH88g54
+          ACCEPT_EULA: Y
+#        options: >-
+#          --health-cmd "sqlcmd -S localhost -U sa -P bbk4k77JKH88g54 -Q 'SELECT 1' || exit 1"
+#          --health-interval 10s
+#          --health-timeout 3s
+#          --health-retries 3
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install DMD
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: dmd-latest
+
+      - name: Install ODBC Driver
+        run: sudo ACCEPT_EULA=Y apt-get install msodbcsql17 -y
+
+      - name: Build Test Project
+        run: dub build --config=integration-test
+
+      - name: Run Test Project (SQL Server)
+        working-directory: ./test
+        env:
+          PORT: ${{ job.services.mssql.ports[1433] }}
+        run: ./odbctest "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,$PORT;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"
+

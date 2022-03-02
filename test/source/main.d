@@ -15,13 +15,16 @@ import core.stdc.stdio : printf;
 // import std.datetime.systime;
 // import std.exception;
 // import std.file;
-import std.stdio : writeln, writefln;
+import std.stdio : stderr, writeln, writefln;
 import std.string : fromStringz, toStringz;
 // import std.variant;
 
-// SQLRETURN checkstmt(alias Fn, string file = __FILE__, size_t line = __LINE__)(Parameters!Fn args) {
-//     return check!(Fn, file, line)(stmt, SQL_HANDLE_STMT, args);
-// }
+version(Windows) {
+    string connectionString = "Driver={SQL Server};Server=127.0.0.1;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Windows
+} else {
+    string connectionString = "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,1433;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix
+    //string connectionString = "Driver=FreeTDS;Server=127.0.0.1,1433;Database=dbo;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix with FreeTDS
+}
 
 
 /*
@@ -29,6 +32,9 @@ import std.string : fromStringz, toStringz;
  * https://www.easysoft.com/developer/languages/c/odbc_tutorial.html#odbc_api
  */
 int main(string[] argv) {
+    if(argv.length > 1) {
+        connectionString = argv[1];
+    }
 
     SQLHENV env = SQL_NULL_HENV; // environment handle
     SQLHDBC conn = SQL_NULL_HDBC; // connection handle
@@ -61,8 +67,6 @@ int main(string[] argv) {
 
     SQLSetConnectAttr(conn, SQL_LOGIN_TIMEOUT, cast(SQLPOINTER) 3, 0); // Set login timeout to 3 seconds
 
-    string connectionString = "Driver={SQL Server};Server=localhost;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Windows
-    //string connectionString = "Server=localhost,1433;User Id=sa;Password=bbk4k77JKH88g54;Driver=msodbcsql17";
 
     writefln("Connecting to db with: %s", connectionString);
 
@@ -105,8 +109,7 @@ int main(string[] argv) {
 
         SQLDisconnect(conn);
     } else {
-        writefln("SQL return code: %u", ret);
-        writeln("Failed to connect to database");
+        stderr.writefln("Failed to connect to database. SQL return code: %u", ret);
         return 1;
     }
 
