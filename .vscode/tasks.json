@@ -1,0 +1,55 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dub Build : Debug (default)",
+      "type": "shell",
+      "command": "dub",
+      "args": ["build"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "clear": true,
+        "panel": "shared",
+        "group": "db"
+      }
+    },
+    {
+      "label": "Dub Build : Release",
+      "type": "shell",
+      "command": "dub",
+      "args": ["build", "--build=release"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "clear": true,
+        "panel": "shared",
+        "group": "db"
+      }
+    },
+    {
+      "label": "Dub Lint",
+      "type": "shell",
+      "command": "dub",
+      "args": ["lint"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "clear": true,
+        "panel": "shared",
+        "group": "db"
+      }
+    }
+  ]
+}
