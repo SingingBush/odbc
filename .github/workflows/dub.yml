@@ -123,7 +123,7 @@ jobs:
 #          --health-timeout 3s
 #          --health-retries 3
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install DMD
         uses: dlang-community/setup-dlang@v1

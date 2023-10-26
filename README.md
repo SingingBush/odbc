@@ -31,7 +31,23 @@ choco install sqlserver-odbcdriver
 
 ### Linux
 
+On Linux you can potentially use [FreeTDS](https://www.freetds.org/) as the ODBC driver when connecting to SQL Server. However, Using Microsoft's _msodbcsql17_ or _msodbcsql18_ driver is recommended.
+
 To install Microsoft's ODBC Driver (either 17 or 18), you can install the _msodbcsql17_ or _msodbcsql18_ package. 
+
+#### Fedora / Red Hat
+
+On Fedora Linux you can find packages under [packages.microsoft.com/config/rhel/](https://packages.microsoft.com/config/rhel/). See the documentation [here](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16#redhat18) for more details.The basic steps are:
+
+```
+curl https://packages.microsoft.com/config/rhel/9/prod.repo > /etc/yum.repos.d/mssql-release.repo
+
+sudo yum remove unixODBC-utf16 unixODBC-utf16-devel
+sudo ACCEPT_EULA=Y dnf install -y unixODBC unixODBC-devel msodbcsql18 mssql-tools18
+```
+
+Then check that the driver is configured in `/etc/odbcinst.ini`
+
 
 #### Ubuntu
 
@@ -40,5 +56,25 @@ sudo curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
 sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list
 
-sudo ACCEPT_EULA=Y apt-get install msodbcsql17 -y
+sudo ACCEPT_EULA=Y apt-get install msodbcsql18 -y
+```
+
+## Building and running tests
+
+Build the library using `dub build`. To run the integration test package you'll need to `docker compose up -d` from the project root then do the following:
+
+
+```
+dub build --config=integration-test
+cd test/
+```
+
+Then run one of the following (depending on your driver version. Also note that _TrustServerCertificate_ may be required):
+
+```
+./odbctest "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,$PORT;Uid=sa;Pwd=bbk4k77JKH88g54;"
+
+or
+
+./odbctest "Driver={ODBC Driver 18 for SQL Server};Server=127.0.0.1,$PORT;Uid=sa;Pwd=bbk4k77JKH88g54;TrustServerCertificate=yes"
 ```
