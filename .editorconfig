@@ -2,13 +2,16 @@
 root = true
 
 [*]
-end_of_line = lf
-insert_final_newline = true
-indent_style = space
-indent_size = 4
-trim_trailing_whitespace = true
 charset = utf-8
+indent_style = space
+end_of_line = lf
+trim_trailing_whitespace = true
 
-[*.yml]
+[*.{c,h,d,di,dd}]
+max_line_length = 150 # should match value in dscanner.ini
+insert_final_newline = true
+indent_size = 4
+
+[*.{yml,json}]
 indent_size = 2
 insert_final_newline = false
