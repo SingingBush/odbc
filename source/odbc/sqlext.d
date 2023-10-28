@@ -52,11 +52,15 @@ enum : uint
     // * values for SQL_ATTR_CP_MATCH *
     SQL_CP_STRICT_MATCH         = 0UL,
     SQL_CP_RELAXED_MATCH        = 1UL,
-    SQL_CP_MATCH_DEFAULT        = SQL_CP_STRICT_MATCH,
+    SQL_CP_MATCH_DEFAULT        = SQL_CP_STRICT_MATCH
+}
 
-    // * values for SQL_ATTR_ODBC_VERSION *
-    SQL_OV_ODBC2                = 2UL,
-    SQL_OV_ODBC3                = 3UL
+/// values for SQL_ATTR_ODBC_VERSION (from ODBC 3.8 onwards, use <major version> * 100 + <minor version>)
+enum : ULONG {
+    SQL_OV_ODBC2          = 2,
+    SQL_OV_ODBC3          = 3,
+    SQL_OV_ODBC3_80       = 380, // ODBCVER >= 0x0380
+    SQL_OV_ODBC4          = 400 // ODBCVER >= 0x0400
 }
 
 // * connection attributes *
