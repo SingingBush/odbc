@@ -3,21 +3,36 @@ ODBC for D
 
 [![DUB Package](https://img.shields.io/dub/v/odbc.svg)](https://code.dlang.org/packages/odbc) [![CI](https://github.com/SingingBush/odbc/actions/workflows/dub.yml/badge.svg)](https://github.com/SingingBush/odbc/actions/workflows/dub.yml)
 
-For many years odbc has been available in phobos under *etc.c.odbc* due to the [work of David L. Davis](https://spottedtiger.tripod.com/D_Language/D_Support_Projects_XP.html) in 2006.
+Since 2015 odbc has been available in phobos under *etc.c.odbc* thanks to the earlier work of [David L. Davis](https://spottedtiger.tripod.com/D_Language/D_Support_Projects_XP.html) in 2006.
 
  - etc/c/odbc/sql.d
  - etc/c/odbc/sqlext.d
  - etc/c/odbc/sqltypes.d
  - etc/c/odbc/sqlucode.d
 
-Those modules are now deprecated (see [Mark etc.c.odbc as deprecated](https://github.com/dlang/phobos/commit/88fd21e7368e8e2158a6ac75d43587c77886d6dd)), and the functionality being moved to *core.sys.windows*. As this will cause issues in packages that need to use ODBC from non-windows environments, this package was created to simply move the code as it was [prior to the change](https://github.com/dlang/phobos/tree/d548e8830aee86c024faf3279dd8d7e35d26aae8/etc/c/odbc), so that it can simply be used as a dub package. The imports are now:
+Those modules were marked as deprecated in Jan 2021 (see [Mark etc.c.odbc as deprecated](https://github.com/dlang/phobos/commit/88fd21e7368e8e2158a6ac75d43587c77886d6dd)), and the functionality being moved to *core.sys.windows*, despite the fact that ODBC is not windows specific.
+
+As this will cause issues in cross-platform packages that require ODBC (such as [DDBC](https://github.com/buggins/ddbc)), this package was created to simply move the code as it was [prior to the change](https://github.com/dlang/phobos/tree/d548e8830aee86c024faf3279dd8d7e35d26aae8/etc/c/odbc), so that it can simply be used as a dub package. With the import paths insterad being:
 
  - odbc/sql.d
  - odbc/sqlext.d
  - odbc/sqltypes.d
  - odbc/sqlucode.d
 
-Note that the D code that was in `etc/c/odbc/*` supports ODBC v3. There is no current ODBC 4 implementation. ODBC 4.0 defines extensions to support non-relational concepts and would be a good future enhancement to make to this project. 
+More recently, in Aug 2023 the situation was reveresed by the odbc module being moved back to *etc.c.odbc* and use of *core.sys.windows.sql* being marked as a warning.
+
+ - https://github.com/dlang/dmd/pull/15560
+ - https://github.com/dlang/phobos/pull/8804
+
+These changes should be released in 2.106
+
+**So where does this leave the odbc dub package?**
+
+The primary downstream project that uses this package is [DDBC](https://github.com/buggins/ddbc) which supports D compilers >= 2.097. These events affected D comilers 2.096 through to 2.105.* and there are good reasons for it to not be part of the main libraries or phobos. So, for now at least, DDBC will continue to use this dub package and reassess the situation at a later date. 
+
+There does seem to be some interest in updating the code in *etc.c.odbc* to support ODBC 4 (currently it's ODBC 3 only) which defines extensions to support non-relational concepts and would be a good future enhancement. Moving forward, enhancements made to *etc.c.odbc* may be ported into this repository, but I'm also updating this project based on changes in [Microsoft's ODBC-Specification](https://github.com/microsoft/ODBC-Specification) and [unixODBC](https://github.com/lurcher/unixODBC) so there could be some divergence. Either way this project will continue to use semantic versioning and get released in a way that hopefully doesn't break any downstream code.
+
+If you plan to use odbc with the latest D compiler (2.106 and above) then *etc.c.odbc* may be the best choice for you. If your project needs to support multiple compiler releases and you don't want your builds to fail on compiler updates, consider using this package. 
 
 ## Installing a driver
 
