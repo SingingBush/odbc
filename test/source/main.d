@@ -27,6 +27,8 @@ version(Windows) {
     //string connectionString = "Driver=FreeTDS;Server=127.0.0.1,1433;Uid=sa;Pwd=bbk4k77JKH88g54;"; // Unix with FreeTDS
 }
 
+int errorCount = 0; // will be used as a return value to indicate failures durin CI
+
 SQLHENV env = SQL_NULL_HENV; // environment handle
 SQLHDBC conn = SQL_NULL_HDBC; // connection handle
 
@@ -49,8 +51,29 @@ int main(string[] argv) {
     SQLUSMALLINT direction;
     SQLRETURN ret;
 
-    SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env); // Allocate an environment handle
-    SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, cast(SQLPOINTER*) SQL_OV_ODBC3, 0); // We want ODBC v3 support
+    ret = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env); // Allocate an environment handle
+
+    // Attempt to use latest ODBC specification, then fall back if not possible
+    if(!SQL_SUCCEEDED(ret = SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, cast(SQLPOINTER*) SQL_OV_ODBC4, 0))) {
+        stderr.writefln("Failed to set environment to ODBC v4.0 specification (will attempt 3.80), SQL return code: %d", ret);
+        
+        if(!SQL_SUCCEEDED(ret = SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, cast(SQLPOINTER*) SQL_OV_ODBC3_80, 0))) {
+            stderr.writefln("Failed to set environment to ODBC v3.80 specification (will attempt 3.0), SQL return code: %d", ret);
+
+            if(!SQL_SUCCEEDED(ret = SQLSetEnvAttr(env, SQL_ATTR_ODBC_VERSION, cast(SQLPOINTER*) SQL_OV_ODBC3, 0))) {
+                stderr.writefln("Failed to set environment to ODBC v3.0 specification, SQL return code: %d", ret);
+                errorCount++; // this should be possible with all supported databases
+            }
+        }
+    }
+
+    ULONG odbcVersion; // note that calls to SQLGetEnvAttr without having set it in first place will fail
+    if(!SQL_SUCCEEDED(ret = SQLGetEnvAttr(env, SQL_ATTR_ODBC_VERSION, &odbcVersion, odbcVersion.sizeof, null))) {
+        stderr.writefln("Failed to call SQLGetEnvAttr() with SQL_ATTR_ODBC_VERSION, SQL return code: %d", ret);
+        errorCount++;
+    } else {
+        writefln("ODBC version set to %d", odbcVersion);
+    }
 
     writeln("Checking installed drivers...");
 
@@ -143,6 +166,10 @@ int main(string[] argv) {
 
         // todo: create some select statements for different data types and ensure data can be retrieved + do prepared statements
 
+        // string[1] params;
+        // params[0] = "1";
+        // execPrepared(`SELECT [name] FROM [odbc_tst_t1] WHERE [id] = ?`, params);
+
         // Disconnect from db and free alloacted handles:
         SQLDisconnect(conn);
         SQLFreeHandle(SQL_HANDLE_DBC, conn);
@@ -152,7 +179,13 @@ int main(string[] argv) {
         return 1;
     }
 
-    return 0;
+    if(errorCount > 0) {
+        stderr.writefln("Tests completed with %d errors", errorCount);
+    } else {
+        writefln("No errors detected");
+    }
+
+    return errorCount;
 }
 
 // If a call to SQL reurns -1 (SQL_ERROR) then this function can be called to get the error message
@@ -189,6 +222,7 @@ void execDirect(string sql) {
     if(SQL_SUCCEEDED(ret = SQLExecDirect(stmt, cast(SQLCHAR*) toStringz(sql), SQL_NTS))) {
         writefln("SQLExecDirect succeeded : %s", sql);
     } else {
+        errorCount++;
         stderr.writefln("SQLExecDirect failed. SQL return code: %d", ret);
         
         if(ret == SQL_ERROR) {
