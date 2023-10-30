@@ -34,9 +34,20 @@ There does seem to be some interest in updating the code in *etc.c.odbc* to supp
 
 If you plan to use odbc with the latest D compiler (2.106 and above) then *etc.c.odbc* may be the best choice for you. If your project needs to support multiple compiler releases and you don't want your builds to fail on compiler updates, consider using this package. 
 
+## Database support
+
+ODBC (Open Database Connectivity) is a widley supported standard that is used by all the major RDBMS vendors such as Microsoft SQL Server, IBM Db2. SAP ASE (previously Sybase), Oracle, PostgreSQL, MySQL (and MariaDB), and possibly more. That said, vendors have differing capabilities so potentially ODBC drivers may not implement all features. Some may even have non-standard features. Therefore efforts are made to test the code using different combinations of drivers and databases. As some providers are not as convenient for CI builds as others the level of testing may vary.
+
+ - **Microsoft SQL Server** : Supported. Tests are run against SQL Server during CI
+ - **Oracle** : Limited Support. Some testing done locally using [Oracle's OCR database image](https://container-registry.oracle.com/ords/ocr/ba/database) (requires Oracle account)
+ - **IBM Db2** : Limited Support. Some testing done locally using `ibmcom/db2:latest` (the newer `icr.io/db2_community/db2` image from [IBM Cloud® Container Registry](https://cloud.ibm.com/registry/) requires IBM account)
+ - **Postgres** : Should work, not currently tested.
+ - **MySQL / MariaDB** : Should work, not currently tested.
+ - **SAP ASE (Adaptive Server Enterprise, formerly Sybase)** : Should work. Could do with testing using the [SAP ASE 90 day trial](https://www.sap.com/products/technology-platform/sybase-ase/trial.html) or their cloud offering.
+
 ## Installing a driver
 
-You'll need to have an ODBC driver installed. For example to use SQL Server you can use _msodbcsql17_, _msodbcsql18_ or _FreeTDS_.
+You'll need to have an ODBC driver installed. For example to use SQL Server you can use _msodbcsql17_, _msodbcsql18_ or _FreeTDS_. For [IBM Db2](https://www.ibm.com/products/db2/database) (and possibly [SAP ASE](https://www.sap.com/uk/products/technology-platform/sybase-ase.html)) you'll likely need to download required libraries from the respective companies and install them manually. 
 
 ### Windows
 

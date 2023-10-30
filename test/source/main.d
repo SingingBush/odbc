@@ -110,7 +110,7 @@ int main(string[] argv) {
         writefln(" - DBMS Version:\t%s", fromStringz(cast(char*) dbms_ver));
 
         SQLUSMALLINT max_concur_act;
-        SQLGetInfo(conn, SQL_MAX_CONCURRENT_ACTIVITIES, cast(SQLPOINTER)max_concur_act, max_concur_act.sizeof, null);
+        ret = SQLGetInfo(conn, SQL_MAX_CONCURRENT_ACTIVITIES, cast(SQLPOINTER)max_concur_act, max_concur_act.sizeof, null);
 
         if (max_concur_act == 0) {
             writeln("SQLGetData - SQL_MAX_CONCURRENT_ACTIVITIES = no limit or undefined");
@@ -118,20 +118,24 @@ int main(string[] argv) {
             writefln("SQLGetData - SQL_MAX_CONCURRENT_ACTIVITIES = %u", max_concur_act);
         }
 
-        SQLUINTEGER getdata_support;
-        SQLGetInfo(conn, SQL_GETDATA_EXTENSIONS, cast(SQLPOINTER)getdata_support, getdata_support.sizeof, null);
-        
-        if (getdata_support & SQL_GD_ANY_ORDER) {
-            writeln("SQLGetData - columns can be retrieved in any order");
-        } else {
-            writeln("SQLGetData - columns must be retrieved in order");
-        }
+        // todo: I've commented out this section for now as it causes a segmentation fault when using Db2. Needs further investigation and if possible a fix
+        // SQLUINTEGER getdata_support;
+        // if(SQL_SUCCEEDED(ret = SQLGetInfo(conn, SQL_GETDATA_EXTENSIONS, cast(SQLPOINTER)getdata_support, getdata_support.sizeof, null))) {
+        //     if (getdata_support & SQL_GD_ANY_ORDER) {
+        //         writeln("SQLGetData - columns can be retrieved in any order");
+        //     } else {
+        //         writeln("SQLGetData - columns must be retrieved in order");
+        //     }
 
-        if (getdata_support & SQL_GD_ANY_COLUMN) {
-            writeln("SQLGetData - can retrieve columns before last bound one");
-        } else {
-            writeln("SQLGetData - columns must be retrieved after last bound one");
-        }
+        //     if (getdata_support & SQL_GD_ANY_COLUMN) {
+        //         writeln("SQLGetData - can retrieve columns before last bound one");
+        //     } else {
+        //         writeln("SQLGetData - columns must be retrieved after last bound one");
+        //     }
+        // } else {
+        //     errorCount++;
+        //     stderr.writeln("SQLGetData - unable to use SQL_GETDATA_EXTENSIONS");
+        // }
 
 
 
@@ -176,6 +180,8 @@ int main(string[] argv) {
         SQLFreeHandle(SQL_HANDLE_ENV, env);
     } else {
         stderr.writefln("Failed to connect to database. SQL return code: %d", ret);
+
+        writeErrorMessage();
         return 1;
     }
 
@@ -189,7 +195,7 @@ int main(string[] argv) {
 }
 
 // If a call to SQL reurns -1 (SQL_ERROR) then this function can be called to get the error message
-void writeErrorMessage(SQLHSTMT stmt) {
+void writeErrorMessage(SQLHSTMT stmt = null) {
     SQLCHAR[6] sqlstate; // A string of 5 characters terminated by a null character. The first 2 characters indicate error class; the next 3 indicate subclass.
     SQLINTEGER nativeError;
     SQLCHAR[SQL_MAX_MESSAGE_LENGTH] messageText;
